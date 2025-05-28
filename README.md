@@ -2,9 +2,9 @@
 Want to make your own server but can only host 1 server? WorldNetwork is your solution!
 
 #Installing
-Install latest Skript plugin, SkUtilities Skript addon, SkUniverse Skript addon (optional for luckperms)
-Put the plugins.sk file to plugins/skript/script
-Restart the server
+- Install latest Skript plugin, SkUtilities Skript addon, SkUniverse Skript addon (optional for luckperms)
+- Put the plugins.sk file to plugins/skript/script
+- Restart the server
 
 #Feature
 - Perworld chat

@@ -1,6 +1,11 @@
 # WorldNetwork
 Want to make your own server but can only host 1 server? WorldNetwork is your solution!
 
+#Installing
+Install latest Skript plugin, SkUtilities Skript addon, SkUniverse Skript addon (optional for luckperms)
+Put the plugins.sk file to plugins/skript/script
+Restart the server
+
 #Feature
 - Perworld chat
 - Global chat
@@ -30,3 +35,24 @@ Want to make your own server but can only host 1 server? WorldNetwork is your so
 - worldnetwork.setkit
 - worldnetwork.globalchat
 - worldnetwork.ec
+
+#Todo List
+- pw spawn done
+- pw hub done
+- pw server done 
+- pw warp done
+- pw tpa done
+- pw home done
+- pw back done
+- pw chat done
+- gb chat done
+- pw fly done
+- pw msg done
+- pw kit done
+- pw nick done
+- pw god done
+- pw ec done
+- pw auction
+- pw msgtoggle
+- pw tptoggle
+- Transfering to javascript (in progress)

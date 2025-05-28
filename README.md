@@ -9,6 +9,8 @@ Want to make your own server but can only host 1 server? WorldNetwork is your so
 - Perworld nickname
 - Perworld enderchest
 - Perworld kit
+- Perworld home
+- Perworld Tpa
 - Luckperm support
 
 #Permission

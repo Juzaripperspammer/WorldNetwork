@@ -1166,6 +1166,11 @@ on teleport:
 	loop {GROUP::list::*}:
 		if {GROUP::world-list::%loop-value%::*} contains {world::%player%}:
 			set {last-location::%player%::%loop-value%} to player's location
+on death:
+	victim is player:
+		loop {GROUP::list::*}:
+			if {GROUP::world-list::%loop-value%::*} contains {world::%victim%}:
+				set {last-location::%victim%::%loop-value%} to victim's location
 on damage:
 	victim is player
 	if {god::%victim%} is true:

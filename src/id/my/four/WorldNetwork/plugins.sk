@@ -1176,16 +1176,19 @@ on damage:
 	if {god::%victim%} is true:
 		cancel event
 on chat:
-	cancel event
 	if {kit::create::%player%} is true:
+		cancel event
 		stop
 	else if {kit::edit::%player%} is true:
+		cancel event
 		stop
 	else if {kit::delay::%player%} is true:
+		cancel event
 		stop
 	else:
 		loop {GROUP::list::*}:
 			if {GROUP::world-list::%loop-value%::*} contains {world::%player%}:
+				cancel event
 				set {_name} to skutil yaml value "Player-nickname.%loop-value%" of file {@player-data}
 				set {_prefix} to coloured player's prefix
 				set {MESSAGE} to coloured chat-message

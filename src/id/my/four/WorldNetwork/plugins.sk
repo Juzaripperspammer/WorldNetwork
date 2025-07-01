@@ -968,7 +968,6 @@ command kit [<text>]:
 			else:
 				send "&cCorrect usage: &f/kit <kit/list>" to player
 on chat:
-	cancel event
 	{kit::create::%player%} is true:
 		set {kit::name} to chat-message
 		loop {GROUP::list::*}:

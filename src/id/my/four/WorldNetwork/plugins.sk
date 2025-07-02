@@ -103,7 +103,7 @@ on load:
 	set {GROUP::list::*} to yml nodes "group" of file {@group}
 	loop {GROUP::list::*}:
 		if yml path "warp.%loop-value%" in file {@warp} does not exist:
-			set skutil yaml value "warp.%loop-value%" from file {@warp} to "none"
+			set skutil yaml value "warp.%loop-value%.example.location" from file {@warp} to "none"
 		if yml path "spawn.group.%loop-value%.location" in file {@spawn} does not exist:
 			set skutil yaml value "spawn.group.%loop-value%.location" from file {@spawn} to "None" 
 		if yml path "server-name.%loop-value%" in file {@config} does not exist:
@@ -157,7 +157,7 @@ command worldnetwork [<text>] [<text>] [<text>]:
 					execute console command "sk reload plugins.sk"
 				else if arg-1 is "version":
 					send "&aWorldNetwork &cBy: antophd" to command sender
-					send "&fVersion: &a1.0" to command sender
+					send "&fVersion: &a1.0.1" to command sender
 				else if arg-1 is "help":
 					if command sender have permission "wn.command":
 						send "&a|---------- WorldNetwork ----------|" to command sender
@@ -516,31 +516,35 @@ command tpa <player>:
 	description: Teleport to player 
 	usage: Correct usge /tpa <player>
 	trigger:
-		if arg-1 is not player:
-			loop {GROUP::list::*}:
-				if {GROUP::world-list::%loop-value%::*} contains {world::%player%}:
-					if {GROUP::world-list::%loop-value%::*} contains {world::%arg-1%}:
-						if {TPA::%player%::%arg-1%} is not true:
-							set skutil yaml value "tpa-from" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" to player
-							set skutil yaml value "tpa-method" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" to "tpa"
-							set {TPA::%player%::%arg-1%} to true
-							send "&aTeleport requested" to player
-							send "&a%player% &7Want to teleport to you" to arg-1
-							send "&a/tpaccept &7to accept &c/tpdeny &7to deny" to arg-1
-							send "&7You have &a120 second &7To confirm" to arg-1
-							wait 120 second
-							if {TPA::%player%::%arg-1%} is true:
-								set {TPA::%player%::%arg-1%} to false
-								send "&cYour tpa request have been expired"
-								if skutil yaml value "tpa-from" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" is player:
-									set skutil yaml value "tpa-from" from file {@player-data} to "none"
-									set skutil yaml value "tpa-method" from file {@player-data} to "none"
-						else:
-							send "&7You already have a teleport request to that player" to player
-					else: 
-						send "&cThat player are not in the same server" to player
-		else:
-			send "&cYou can't teleport to your self"
+		set {toggle::tpa::%arg-1%} to skutil yaml value "toggle.tpa" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml"
+		if {toggle::tps::%arg-1%} is true:
+			if arg-1 is not player:
+				loop {GROUP::list::*}:
+					if {GROUP::world-list::%loop-value%::*} contains {world::%player%}:
+						if {GROUP::world-list::%loop-value%::*} contains {world::%arg-1%}:
+							if {TPA::%player%::%arg-1%} is not true:
+								set skutil yaml value "tpa-from" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" to player
+								set skutil yaml value "tpa-method" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" to "tpa"
+								set {TPA::%player%::%arg-1%} to true
+								send "&aTeleport requested" to player
+								send "&a%player% &7Want to teleport to you" to arg-1
+								send "&a/tpaccept &7to accept &c/tpdeny &7to deny" to arg-1
+								send "&7You have &a120 second &7To confirm" to arg-1
+								wait 120 second
+								if {TPA::%player%::%arg-1%} is true:
+									set {TPA::%player%::%arg-1%} to false
+									send "&cYour tpa request have been expired"
+									if skutil yaml value "tpa-from" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" is player:
+										set skutil yaml value "tpa-from" from file {@player-data} to "none"
+										set skutil yaml value "tpa-method" from file {@player-data} to "none"
+							else:
+								send "&7You already have a teleport request to that player" to player
+						else: 
+							send "&cThat player are not in the same server" to player
+			else:
+				send "&cYou can't teleport to your self"
+		else if {toggle::tpa::%arg-1%} is false:
+			send "&aThat player turn of tpa toggle" to player
 command tpaccept:
 	aliases: tpyes, worldnetwork:tpaccept, worldnetwork:tpyes
 	description: Accept player teleport request
@@ -592,33 +596,37 @@ command tpahere <player>:
 	description: Teleport player to your location
 	usage: /tpahere <player>
 	trigger:
-		if arg-1 is not player:
-			loop {GROUP::list::*}:
-				if {GROUP::world-list::%loop-value%::*} contains {world::%player%}:
-					if {GROUP::world-list::%loop-value%::*} contains {world::%arg-1%}:
-						if {TPAHERE::%player%::%arg-1%} is not true:
-							set skutil yaml value "tpa-from" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" to player
-							set skutil yaml value "tpa-method" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" to "tpahere"
-							set skutil yaml value "tpa-location" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" to player's location
-							set {TPAHERE::%player%::%arg-1%} to true
-							send "&aTeleport requested" to player
-							send "&a%player% &7Want you teleport to them" to arg-1
-							send "&a/tpaccept &7to accept &c/tpdeny &7to deny" to arg-1
-							send "&7You have &a120 second &7To confirm" to arg-1
-							wait 120 second
-							if {TPAHERE::%player%::%arg-1%} is true:
-								set {TPAHERE::%player%::%arg-1%} to false
-								send "&cYour tpahere request have been expired"
-								if skutil yaml value "tpa-from" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" is player:
-									set skutil yaml value "tpa-from" from file {@player-data} to "none"
-									set skutil yaml value "tpa-method" from file {@player-data} to "none"
-									set skutil yaml value "tpa-location" from file {@player-data} to "none"
-						else:
-							send "&7You already have a teleport request to that player" to player
-					else: 
-						send "&cThat player are not in the same server" to player
-		else:
-			send "&cYou can't teleport to your self"
+		set {toggle::tpahere::%arg-1%} to skutil yaml value "toggle.tpahere" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml"
+		if {toggle::tpahere::%arg-1%} is true:
+			if arg-1 is not player:
+				loop {GROUP::list::*}:
+					if {GROUP::world-list::%loop-value%::*} contains {world::%player%}:
+						if {GROUP::world-list::%loop-value%::*} contains {world::%arg-1%}:
+							if {TPAHERE::%player%::%arg-1%} is not true:
+								set skutil yaml value "tpa-from" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" to player
+								set skutil yaml value "tpa-method" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" to "tpahere"
+								set skutil yaml value "tpa-location" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" to player's location
+								set {TPAHERE::%player%::%arg-1%} to true
+								send "&aTeleport requested" to player
+								send "&a%player% &7Want you teleport to them" to arg-1
+								send "&a/tpaccept &7to accept &c/tpdeny &7to deny" to arg-1
+								send "&7You have &a120 second &7To confirm" to arg-1
+								wait 120 second
+								if {TPAHERE::%player%::%arg-1%} is true:
+									set {TPAHERE::%player%::%arg-1%} to false
+									send "&cYour tpahere request have been expired"
+									if skutil yaml value "tpa-from" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" is player:
+										set skutil yaml value "tpa-from" from file {@player-data} to "none"
+										set skutil yaml value "tpa-method" from file {@player-data} to "none"
+										set skutil yaml value "tpa-location" from file {@player-data} to "none"
+							else:
+								send "&7You already have a teleport request to that player" to player
+						else: 
+							send "&cThat player are not in the same server" to player
+			else:
+				send "&cYou can't teleport to your self"
+		else if {toggle::tpahere::%arg-1%} is false:
+			send "&aThat player toggle of tpahere request" to player
 command tpall:
 	aliases: callall, askall, worldnetwork:tpall, worldnetwork:callall, worldnetwork:askall
 	description: send teleport request to all player is server
@@ -632,21 +640,23 @@ command tpall:
 						set {TPALL::cooldown} to true
 						send "&aTeleport requested" to player
 						if {GROUP::world-list::%loop-value-1%::*} contains {world::%loop-player%}:
-							if loop-player is not player:
-								set skutil yaml value "tpa-from" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml" to player
-								set skutil yaml value "tpa-method" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml" to "tpahere"
-								set skutil yaml value "tpa-location" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml" to player's location
-								set {TPAHERE::%player%::%loop-player%} to true
-								send "&a%player% &7Want you teleport to them" to loop-player
-								send "&a/tpaccept &7to accept &c/tpdeny &7to deny" to loop-player
-								send "&7You have &a120 second &7To confirm" to loop-player
-								wait 120 second
-								if {TPAHERE::%player%::%loop-player%} is true:
-									set {TPAHERE::%player%::%loop-player%} to false
-									if skutil yaml value "tpa-from" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml" is player:
-										set skutil yaml value "tpa-from" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml" to "none"
-										set skutil yaml value "tpa-method" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml" to "none"
-										set skutil yaml value "tpa-location" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml" to "none"
+							set {toggle::tpahere::%loop-player%} to skutil yaml value "toggle.tpahere" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml"
+							if {toggle::tpahere::%loop-player%} is true:
+								if loop-player is not player:
+									set skutil yaml value "tpa-from" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml" to player
+									set skutil yaml value "tpa-method" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml" to "tpahere"
+									set skutil yaml value "tpa-location" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml" to player's location
+									set {TPAHERE::%player%::%loop-player%} to true
+									send "&a%player% &7Want you teleport to them" to loop-player
+									send "&a/tpaccept &7to accept &c/tpdeny &7to deny" to loop-player
+									send "&7You have &a120 second &7To confirm" to loop-player
+									wait 120 second
+									if {TPAHERE::%player%::%loop-player%} is true:
+										set {TPAHERE::%player%::%loop-player%} to false
+										if skutil yaml value "tpa-from" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml" is player:
+											set skutil yaml value "tpa-from" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml" to "none"
+											set skutil yaml value "tpa-method" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml" to "none"
+											set skutil yaml value "tpa-location" from file "plugins/WorldNetwork/UserData/%uuid of loop-player%.yml" to "none"
 		else:
 			send "&7That command is on cooldown" to player
 		wait 10 second
@@ -775,19 +785,23 @@ command msg <player> [<text>]:
 	aliases: w, m, t, whisper, tell, worldnetwork:msg, worldnetwork:w, worldnetwork:m, worldnetwork:t, worldnetwork:whisper, worldnetwork:tell
 	usage: &cCoreect usage: /msg <player> <message>
 	trigger:
-		loop {GROUP::list::*}:
-			if arg-1 is not player:
-				if {GROUP::world-list::%loop-value%::*} contains {world::%player%}:
-					if {GROUP::world-list::%loop-value%::*} contains {world::%arg-1%}:
-						if arg-2 is set:
-							set {_message} to "&f[&a%player%&f] -> &f[&a%arg-1%&f] %arg-2%"
-							set skutil yaml value "msg-sender.%loop-value%" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" to player
-							message coloured {_message} to arg-1
-							message coloured {_message} to player
+		set {toggle::msg::%arg-1%} to skutil yaml value "toggle.msg" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml"
+		if {toggle::msg::%arg-1%} is true:
+			loop {GROUP::list::*}:
+				if arg-1 is not player:
+					if {GROUP::world-list::%loop-value%::*} contains {world::%player%}:
+						if {GROUP::world-list::%loop-value%::*} contains {world::%arg-1%}:
+							if arg-2 is set:
+								set {_message} to "&f[&a%player%&f] -> &f[&a%arg-1%&f] %arg-2%"
+								set skutil yaml value "msg-sender.%loop-value%" from file "plugins/WorldNetwork/UserData/%uuid of arg-1%.yml" to player
+								message coloured {_message} to arg-1
+								message coloured {_message} to player
+							else:
+								send "&cCorrect usage: /msg <player> <message>" to player
 						else:
-							send "&cCorrect usage: /msg <player> <message>" to player
-					else:
-						send "&aThat player is not in the same server as you" to player
+							send "&aThat player is not in the same server as you" to player
+		else if {toggle::msg::%arg-1%} is false:
+			send "&aThah player turn off msg toggle" to player					
 command r [<text>]:
 	aliases: reply, worldnetwork:r, worldnetwork:reply
 	trigger:
@@ -1114,6 +1128,33 @@ on inventory close:
 					add loop-value-2 to {_temphd::*}
 				loop {_temphd::*}:
 					add loop-value-2 to yml list "enderchest" of file "plugins/WorldNetwork/enderchest/%loop-value-1%/%uuid of player%.yml"
+command tpatoggle:
+	trigger:
+		set {toggle::tpa::%player%} to skutil yaml value "toggle.tpa" from file {@player-data}
+		if {toggle::tpa::%player%} is true:
+			set skutil yaml value "toggle.tpa" from file {@player-data} to false
+			send "&cYou turn off tpatoggle" to player
+		else if {toggle::tpa::%player%} is false:
+			set skutil yaml value "toggle.tpa" from file {@player-data} to true
+			send "&aYou turn on tpatoggle"
+command msgtoggle:
+	trigger:
+		set {toggle::msg::%player%} to skutil yaml value "toggle.msg" from file {@player-data}
+		if {toggle::msg::%player%} is true:
+			set skutil yaml value "toggle.msg" from file {@player-data} to false
+			send "&cYou turn off msgtoggle" to player
+		else if {toggle::msg::%player%} is false:
+			set skutil yaml value "toggle.msg" from file {@player-data} to true
+			send "&aYou turn on msgtoggle"
+command tpaheretoggle:
+	trigger:
+		set {toggle::tpahere::%player%} to skutil yaml value "toggle.tpahere" from file {@player-data}
+		if {toggle::tpahere::%player%} is true:
+			set skutil yaml value "toggle.tpahere" from file {@player-data} to false
+			send "&cYou turn off tpaheretoggle" to player
+		else if {toggle::tpahere::%player%} is false:
+			set skutil yaml value "toggle.tpahere" from file {@player-data} to true
+			send "&aYou turn on tpaheretoggle"
 on player world change:
 	set {world::%player%} to player's world
 	wait 1 second
@@ -1150,6 +1191,9 @@ on connect:
 		set skutil yaml value "tpa-location" from file {@player-data} to "None"
 		set skutil yaml value "tpa-from" from file {@player-data} to "none"
 		set skutil yaml value "tpa-method" from file {@player-data} to "none"
+		set skutil yaml value "toggle.tpa" from file {@player-data} to true
+		set skutil yaml value "toggle.tpahere" from file {@player-data} to true
+		set skutil yaml value "toggle.msg" from file {@player-data} to true
 	loop {GROUP::list::*}:
 		if yml path "Player-nickname.%loop-value%" in file {@player-data} does not exist:
 			set skutil yaml value "Player-nickname.%loop-value%" from file {@player-data} to "%player%"
@@ -1159,6 +1203,9 @@ on connect:
 			set skutil yaml value "msg-sender.%loop-value%" from file {@player-data} to "none"
 		if yml path "god.%loop-value%" in file {@player-data} does not exist:
 			set skutil yaml value "god.%loop-value%" from file {@player-data} to false
+	set {toggle::tpa::%player%} to skutil yaml value "toggle.tpa" from file {@player-data}
+	set {toggle::tpahere::%player%} to skutil yaml value "toggle.tpahere" from file {@player-data}
+	set {toggle::msg::%player%} to skutil yaml value "toggle.msg" from file {@player-data}
 	set {TPA::method} to skutil yaml value "tpa-method" of file {@player-data}
 	set {STATUS::%player%} to yaml value "Status" of file {@player-data}
 on teleport:

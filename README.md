@@ -52,7 +52,7 @@ Want to make your own server but can only host 1 server? WorldNetwork is your so
 - pw nick done
 - pw god done
 - pw ec done
+- pw msgtoggle done
+- pw tptoggle done
 - pw auction
-- pw msgtoggle
-- pw tptoggle
 - Transfering to javascript (in progress)
